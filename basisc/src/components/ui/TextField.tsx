@@ -18,8 +18,8 @@ export function TextField({ label, id, error, className = "", ...props }: TextFi
         id={inputId}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}
-        className={`h-[2.875rem] rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-[var(--space-3)] text-[var(--font-size-sm)] text-[var(--color-text)] transition-colors placeholder:text-[var(--color-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)] disabled:cursor-not-allowed disabled:bg-[color-mix(in_srgb,var(--color-surface)_84%,var(--color-muted)_16%)] ${
-          error ? "border-[var(--color-error)]" : "border-[var(--color-border)]"
+        className={`h-11 w-full rounded-xl border bg-[var(--color-surface)] px-4 text-sm text-[#0f172a] transition-colors placeholder:text-[var(--color-muted)] focus:border-[#5562ff] focus:ring-2 focus:ring-[#5562ff]/20 disabled:cursor-not-allowed disabled:bg-[color-mix(in_srgb,var(--color-surface)_84%,var(--color-muted)_16%)] ${
+          error ? "border-[var(--color-error)]" : "border-[#d6dbe8]"
         } ${className}`}
         {...props}
       />
