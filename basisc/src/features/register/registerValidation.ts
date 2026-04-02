@@ -38,7 +38,7 @@ export function validateRegisterForm(values: RegisterFormValues): RegisterFormEr
 
   if (!values.confirmPassword) {
     errors.confirmPassword = "Please confirm your password";
-  } else if (values.password && values.confirmPassword !== values.password) {
+  } else if (values.confirmPassword !== values.password) {
     errors.confirmPassword = "Passwords do not match";
   }
 

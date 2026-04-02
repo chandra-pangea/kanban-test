@@ -35,4 +35,48 @@ describe("RegisterForm", () => {
     expect(screen.getByLabelText("Password")).toBeDisabled();
     expect(screen.getByLabelText("Confirm password")).toBeDisabled();
   });
+
+  it("submits trimmed username and all fields when valid", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<RegisterForm onSubmit={onSubmit} />);
+
+    await user.type(screen.getByLabelText("Username"), "  janedoe  ");
+    await user.type(screen.getByLabelText("Email"), "jane@example.com");
+    await user.type(screen.getByLabelText("Password", { exact: true }), "password123");
+    await user.type(screen.getByLabelText("Confirm password"), "password123");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(onSubmit).toHaveBeenCalledWith({
+      username: "janedoe",
+      email: "jane@example.com",
+      password: "password123",
+      confirmPassword: "password123",
+    });
+  });
+
+  it("shows password mismatch error and does not submit", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(<RegisterForm onSubmit={onSubmit} />);
+
+    await user.type(screen.getByLabelText("Username"), "janedoe");
+    await user.type(screen.getByLabelText("Email"), "jane@example.com");
+    await user.type(screen.getByLabelText("Password", { exact: true }), "password123");
+    await user.type(screen.getByLabelText("Confirm password"), "password124");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(screen.getByText("Passwords do not match")).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("marks inputs as required for assistive technology", () => {
+    render(<RegisterForm onSubmit={vi.fn()} />);
+
+    expect(screen.getByLabelText("Username")).toBeRequired();
+    expect(screen.getByLabelText("Email")).toBeRequired();
+    expect(screen.getByLabelText("Password", { exact: true })).toBeRequired();
+    expect(screen.getByLabelText("Confirm password")).toBeRequired();
+  });
 });

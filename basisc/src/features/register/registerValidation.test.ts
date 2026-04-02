@@ -53,4 +53,24 @@ describe("validateRegisterForm", () => {
     expect(result.password).toBeUndefined();
     expect(result.confirmPassword).toBeUndefined();
   });
+
+  it("treats whitespace-only username as missing", () => {
+    const result = validateRegisterForm({ ...validBase, username: "   " });
+    expect(result.username).toBe("Username is required");
+  });
+
+  it("accepts username with surrounding whitespace via trim", () => {
+    const result = validateRegisterForm({ ...validBase, username: "  janedoe  " });
+    expect(result.username).toBeUndefined();
+  });
+
+  it("reports mismatch when confirm is filled but password is empty", () => {
+    const result = validateRegisterForm({
+      ...validBase,
+      password: "",
+      confirmPassword: "anything",
+    });
+    expect(result.password).toBe("Password is required");
+    expect(result.confirmPassword).toBe("Passwords do not match");
+  });
 });
