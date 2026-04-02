@@ -13,6 +13,11 @@
     "test:coverage": "vitest run --coverage",
     "e2e": "playwright test",
     "test:e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "e2e:headed:slow": "playwright test --headed --slow-mo=500",
+    "e2e:ui": "playwright test --ui",
+    "e2e:debug": "playwright test --debug",
+    "e2e:report": "playwright show-report",
     "ci": "npm run lint && npm run typecheck && npm run test:coverage && npm run e2e",
     "preview": "vite preview"
   },
