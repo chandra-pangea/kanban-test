@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { LoginPage } from "./features/login/LoginPage";
+import { RegisterPage } from "./features/register/RegisterPage";
 
 function DashboardPage() {
   const { user, logout } = useAuth();
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/dashboard" element={isAuthenticated ? <DashboardPage /> : <Navigate to="/" replace />} />
     </Routes>
   );

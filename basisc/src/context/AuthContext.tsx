@@ -9,6 +9,7 @@ interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string) => Promise<void>;
+  register: (username: string, email: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -33,6 +34,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setUser(next);
   }, []);
 
+  const register = useCallback(async (username: string, email: string) => {
+    const next = { email, name: username };
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    setUser(next);
+  }, []);
+
   const logout = useCallback(() => {
     sessionStorage.removeItem(STORAGE_KEY);
     setUser(null);
@@ -43,9 +50,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
       user,
       isAuthenticated: Boolean(user),
       login,
+      register,
       logout,
     }),
-    [login, logout, user],
+    [login, logout, register, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

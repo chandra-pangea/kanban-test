@@ -17,6 +17,7 @@ export function TextField({ label, id, error, className = "", ...props }: TextFi
       <input
         id={inputId}
         aria-invalid={Boolean(error)}
+        aria-required={props.required === true ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={`h-[2.875rem] rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-[var(--space-3)] text-[var(--font-size-sm)] text-[var(--color-text)] transition-colors placeholder:text-[var(--color-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)] disabled:cursor-not-allowed disabled:bg-[color-mix(in_srgb,var(--color-surface)_84%,var(--color-muted)_16%)] ${
           error ? "border-[var(--color-error)]" : "border-[var(--color-border)]"
