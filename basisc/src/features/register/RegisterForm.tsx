@@ -41,6 +41,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       <TextField
         label="Username"
         type="text"
+        required
         autoComplete="username"
         value={values.username}
         onChange={(event) => setValues((prev) => ({ ...prev, username: event.target.value }))}
@@ -50,6 +51,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       <TextField
         label="Email"
         type="email"
+        required
         autoComplete="email"
         value={values.email}
         onChange={(event) => setValues((prev) => ({ ...prev, email: event.target.value }))}
@@ -59,6 +61,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       <TextField
         label="Password"
         type="password"
+        required
         autoComplete="new-password"
         value={values.password}
         onChange={(event) => setValues((prev) => ({ ...prev, password: event.target.value }))}
@@ -68,6 +71,7 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       <TextField
         label="Confirm password"
         type="password"
+        required
         autoComplete="new-password"
         value={values.confirmPassword}
         onChange={(event) => setValues((prev) => ({ ...prev, confirmPassword: event.target.value }))}

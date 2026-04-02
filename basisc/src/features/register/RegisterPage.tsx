@@ -16,7 +16,8 @@ export function RegisterPage() {
           Join us
         </h1>
         <p className="mt-[var(--space-4)] text-[var(--font-size-md)] text-[var(--color-muted)]">
-          Create an account with your username and email to start tracking work and collaborating in your workspace.
+          Create an account with your username, email, and password. Every field is required to keep your profile
+          complete and your workspace secure.
         </p>
       </section>
 
@@ -26,7 +27,7 @@ export function RegisterPage() {
             Create account
           </h2>
           <p className="mt-[var(--space-2)] text-[var(--font-size-sm)] text-[var(--color-muted)]">
-            Choose a username and enter your email to get started.
+            All fields are required.
           </p>
         </header>
         <RegisterForm
