@@ -24,11 +24,16 @@ describe("LoginForm", () => {
     render(<LoginForm onSubmit={onSubmit} />);
 
     await user.type(screen.getByLabelText("Email"), "dev@example.com");
-    await user.type(screen.getByLabelText("Password"), "password123");
+    await user.type(screen.getByLabelText("Password"), "x");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     expect(screen.getByRole("button", { name: "Signing in..." })).toBeDisabled();
     expect(screen.getByLabelText("Email")).toBeDisabled();
     expect(screen.getByLabelText("Password")).toBeDisabled();
+  });
+
+  it("shows server error when provided", () => {
+    render(<LoginForm onSubmit={vi.fn()} serverError="Bad credentials." />);
+    expect(screen.getByTestId("login-error")).toHaveTextContent("Bad credentials.");
   });
 });

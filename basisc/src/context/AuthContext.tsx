@@ -1,53 +1,77 @@
-import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+} from "react";
+import {
+  loadSession,
+  removeSessionRecord,
+  saveSession,
+  tryLogin,
+  tryRegisterUser,
+  type SessionUser,
+} from "../lib/authStorage";
 
-interface User {
-  email: string;
+export interface AuthUser {
   name: string;
+  email: string;
 }
 
 interface AuthContextValue {
-  user: User | null;
+  user: AuthUser | null;
+  currentUser: AuthUser | null;
   isAuthenticated: boolean;
-  login: (email: string) => Promise<void>;
-  register: (username: string, email: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ ok: true } | { ok: false; error: "invalid_credentials" }>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+  ) => Promise<{ ok: true } | { ok: false; error: "duplicate_email" }>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-const STORAGE_KEY = "nexus-user";
 
-function readStoredUser(): User | null {
-  try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as User) : null;
-  } catch {
-    return null;
-  }
+function readInitialUser(): AuthUser | null {
+  const s = loadSession();
+  if (!s?.email || !s?.name) return null;
+  return { name: s.name, email: s.email };
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User | null>(readStoredUser);
+  const [user, setUser] = useState<AuthUser | null>(readInitialUser);
 
-  const login = useCallback(async (email: string) => {
-    const next = { email, name: email.split("@")[0] };
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setUser(next);
+  const login = useCallback(async (email: string, password: string) => {
+    const result = tryLogin(email, password);
+    if (!result.ok) {
+      return { ok: false as const, error: "invalid_credentials" as const };
+    }
+    const session: SessionUser = result.user;
+    saveSession(session);
+    setUser(session);
+    return { ok: true as const };
   }, []);
 
-  const register = useCallback(async (username: string, email: string) => {
-    const next = { email, name: username };
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setUser(next);
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    const result = tryRegisterUser({ name, email, password });
+    if (!result.ok) {
+      return { ok: false as const, error: "duplicate_email" as const };
+    }
+    return { ok: true as const };
   }, []);
 
   const logout = useCallback(() => {
-    sessionStorage.removeItem(STORAGE_KEY);
+    removeSessionRecord();
     setUser(null);
   }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
+      currentUser: user,
       isAuthenticated: Boolean(user),
       login,
       register,

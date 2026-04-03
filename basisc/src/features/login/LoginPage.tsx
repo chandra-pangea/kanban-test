@@ -1,37 +1,72 @@
-import { Navigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { LoginForm } from "./LoginForm";
 
 export function LoginPage() {
-  const { isAuthenticated, user, login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { from?: string; registered?: boolean } | undefined;
+  const [serverError, setServerError] = useState<string | undefined>();
 
-  if (isAuthenticated && user) {
-    return <Navigate to="/dashboard" replace />;
+  const redirectTo =
+    state?.from && state.from !== "/login" && state.from !== "/register" ? state.from : "/";
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-page)] px-4 py-10 md:py-16">
-      <section className="mx-auto grid w-full max-w-5xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] md:grid-cols-2">
-        <div className="hidden bg-gradient-to-b from-[#5562ff] to-[#3947f4] p-10 text-white md:block">
-          <p className="text-sm/6 tracking-[0.14em] text-white/70">NEXUS</p>
-          <h2 className="mt-6 text-3xl font-semibold leading-tight">Manage your projects with clarity.</h2>
-          <p className="mt-4 max-w-sm text-sm/6 text-white/85">
-            Plan work, track progress, and collaborate with your team in one clean workspace.
+    <main className="grid min-h-screen grid-cols-1 bg-[var(--color-page)] px-[var(--space-4)] py-[var(--space-8)] md:grid-cols-2 md:items-center md:gap-[var(--space-8)] md:px-[var(--space-10)]">
+      <section className="mx-auto hidden w-full max-w-[28rem] md:block">
+        <h1 className="text-[var(--font-size-xl)] font-extrabold leading-[var(--line-tight)] text-[var(--color-text)]">
+          Welcome back
+        </h1>
+        <p className="mt-[var(--space-4)] text-[var(--font-size-md)] text-[var(--color-muted)]">
+          Sign in to access your cart and checkout. Sessions persist in local storage for this frontend-only demo.
+        </p>
+      </section>
+
+      <section className="mx-auto w-full max-w-[28rem] rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] p-[var(--space-6)] shadow-[var(--shadow-card)] md:p-[var(--space-8)]">
+        <header className="mb-[var(--space-6)]">
+          <h2 className="text-[var(--font-size-lg)] font-semibold leading-[var(--line-tight)] text-[var(--color-text)]">
+            Sign in
+          </h2>
+          <p className="mt-[var(--space-2)] text-[var(--font-size-sm)] text-[var(--color-muted)]">
+            Enter the email and password you used at registration.
           </p>
-        </div>
-
-        <div className="p-6 sm:p-10">
-          <h1 className="text-3xl font-semibold tracking-tight text-[#111827]">Welcome back</h1>
-          <p className="mt-2 text-sm text-[#64748b]">Please enter your details to log in.</p>
-
-          <div className="mt-8">
-            <LoginForm
-              onSubmit={async (values) => {
-                await login(values.email);
-              }}
-            />
-          </div>
-        </div>
+        </header>
+        {state?.registered ? (
+          <p
+            role="status"
+            data-testid="login-registered-notice"
+            className="mb-[var(--space-4)] rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] px-[var(--space-3)] py-[var(--space-3)] text-[var(--font-size-sm)] font-medium text-[var(--color-primary)]"
+          >
+            Registration successful. Please sign in.
+          </p>
+        ) : null}
+        <LoginForm
+          serverError={serverError}
+          onSubmit={async (values) => {
+            setServerError(undefined);
+            const result = await login(values.email, values.password);
+            if (result.ok) {
+              navigate(redirectTo, { replace: true });
+            } else {
+              setServerError("Invalid email or password.");
+            }
+          }}
+        />
+        <p className="mt-[var(--space-5)] text-center text-[var(--font-size-sm)] text-[var(--color-muted)]">
+          Need an account?{" "}
+          <Link
+            to="/register"
+            className="font-semibold text-[var(--color-primary)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)]"
+          >
+            Create one
+          </Link>
+        </p>
       </section>
     </main>
   );
