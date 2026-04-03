@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { GoogleSignInButton } from "../../components/GoogleSignInButton";
 import { useAuth } from "../../context/AuthContext";
+import { isGoogleAuthConfigured } from "../../lib/googleAuth";
 import { RegisterForm } from "./RegisterForm";
 
 export function RegisterPage() {
-  const { isAuthenticated, register } = useAuth();
+  const { isAuthenticated, register, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | undefined>();
+  const [oauthError, setOauthError] = useState<string | undefined>();
 
   useEffect(() => {
     if (!success) return;
@@ -51,18 +54,50 @@ export function RegisterPage() {
             Registration successful. Redirecting to sign in…
           </p>
         ) : (
-          <RegisterForm
-            serverError={serverError}
-            onSubmit={async (values) => {
-              setServerError(undefined);
-              const result = await register(values.name, values.email, values.password);
-              if (result.ok) {
-                setSuccess(true);
-              } else {
-                setServerError("An account with this email already exists.");
-              }
-            }}
-          />
+          <>
+            <RegisterForm
+              serverError={serverError}
+              onSubmit={async (values) => {
+                setServerError(undefined);
+                setOauthError(undefined);
+                const result = await register(values.name, values.email, values.password);
+                if (result.ok) {
+                  setSuccess(true);
+                } else {
+                  setServerError("An account with this email already exists.");
+                }
+              }}
+            />
+            {isGoogleAuthConfigured() ? (
+              <div className="mt-[var(--space-5)]">
+                <div className="relative mb-[var(--space-4)]">
+                  <div className="absolute inset-0 flex items-center" aria-hidden>
+                    <span className="w-full border-t border-[var(--color-border)]" />
+                  </div>
+                  <div className="relative flex justify-center text-[var(--font-size-xs)] uppercase tracking-wide">
+                    <span className="bg-[var(--color-surface)] px-[var(--space-2)] text-[var(--color-muted)]">Or</span>
+                  </div>
+                </div>
+                {oauthError ? (
+                  <p
+                    role="alert"
+                    data-testid="register-oauth-error"
+                    className="mb-[var(--space-4)] rounded-[var(--radius-sm)] bg-[var(--color-error-soft)] px-[var(--space-2)] py-[var(--space-2)] text-[var(--font-size-sm)] text-[var(--color-error)]"
+                  >
+                    {oauthError}
+                  </p>
+                ) : null}
+                <GoogleSignInButton
+                  onSuccess={(profile) => {
+                    setOauthError(undefined);
+                    signInWithGoogle(profile.name, profile.email);
+                    navigate("/", { replace: true });
+                  }}
+                  onError={(message) => setOauthError(message)}
+                />
+              </div>
+            ) : null}
+          </>
         )}
         <p className="mt-[var(--space-5)] text-center text-[var(--font-size-sm)] text-[var(--color-muted)]">
           Already have an account?{" "}
