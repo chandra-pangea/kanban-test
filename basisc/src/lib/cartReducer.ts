@@ -3,7 +3,7 @@ import type { CartItem, Product } from "../types/product";
 export type CartState = { items: CartItem[] };
 
 export type CartAction =
-  | { type: "ADD"; product: Product }
+  | { type: "ADD"; product: Product; qty?: number }
   | { type: "REMOVE"; id: string }
   | { type: "DECREMENT"; id: string }
   | { type: "SET_QTY"; id: string; qty: number }
@@ -14,15 +14,20 @@ export const initialCartState: CartState = { items: [] };
 export function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "ADD": {
+      const addQty = Math.max(1, Math.floor(action.qty ?? 1));
       const existing = state.items.find((i) => i.id === action.product.id);
       if (existing) {
         return {
           items: state.items.map((i) =>
-            i.id === action.product.id ? { ...i, qty: i.qty + 1 } : i,
+            i.id === action.product.id
+              ? { ...i, qty: i.qty + addQty }
+              : i,
           ),
         };
       }
-      return { items: [...state.items, { ...action.product, qty: 1 }] };
+      return {
+        items: [...state.items, { ...action.product, qty: addQty }],
+      };
     }
     case "REMOVE":
       return { items: state.items.filter((i) => i.id !== action.id) };

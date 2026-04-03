@@ -22,7 +22,7 @@ type CartContextValue = {
   items: CartItem[];
   itemCount: number;
   subtotal: number;
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, qty?: number) => void;
   removeFromCart: (id: string) => void;
   decrement: (id: string) => void;
   setQuantity: (id: string, qty: number) => void;
@@ -56,8 +56,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [state.items]);
 
-  const addToCart = useCallback((product: Product) => {
-    dispatch({ type: "ADD", product });
+  const addToCart = useCallback((product: Product, qty?: number) => {
+    dispatch({ type: "ADD", product, qty });
   }, []);
 
   const removeFromCart = useCallback((id: string) => {

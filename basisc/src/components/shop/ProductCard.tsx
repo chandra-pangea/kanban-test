@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import type { Product } from "../../types/product";
 
@@ -11,14 +12,18 @@ export function ProductCard({ product }: Props) {
       className="flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]"
       data-testid="product-card"
     >
-      <div className="aspect-square overflow-hidden bg-[var(--color-border)]/40">
+      <Link
+        to={`/product/${product.id}`}
+        className="block aspect-square overflow-hidden bg-[var(--color-border)]/40 outline-none ring-0 transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
+        data-testid={`product-link-${product.id}`}
+      >
         <img
           src={product.image}
           alt=""
           className="h-full w-full object-cover"
           loading="lazy"
         />
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col gap-[var(--space-2)] p-[var(--space-4)]">
         <p className="text-[var(--font-size-xs)] font-medium uppercase tracking-wide text-[var(--color-primary)]">
           {product.category}
@@ -27,7 +32,12 @@ export function ProductCard({ product }: Props) {
           className="text-[var(--font-size-md)] font-semibold leading-[var(--line-tight)] text-[var(--color-text)]"
           data-testid="product-name"
         >
-          {product.name}
+          <Link
+            to={`/product/${product.id}`}
+            className="hover:text-[var(--color-primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)]"
+          >
+            {product.name}
+          </Link>
         </h2>
         <p className="mt-auto text-[var(--font-size-lg)] font-bold text-[var(--color-text)]">
           ${product.price.toFixed(2)}

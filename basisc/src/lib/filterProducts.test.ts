@@ -9,6 +9,7 @@ const products: Product[] = [
     price: 100,
     category: "Tech",
     image: "",
+    description: "",
   },
   {
     id: "2",
@@ -16,6 +17,7 @@ const products: Product[] = [
     price: 50,
     category: "Tech",
     image: "",
+    description: "",
   },
   {
     id: "3",
@@ -23,6 +25,7 @@ const products: Product[] = [
     price: 25,
     category: "Home",
     image: "",
+    description: "",
   },
 ];
 
