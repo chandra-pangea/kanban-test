@@ -5,16 +5,16 @@ import { validateRegisterForm, type RegisterFormErrors, type RegisterFormValues 
 
 interface RegisterFormProps {
   onSubmit: (values: RegisterFormValues) => Promise<void> | void;
+  serverError?: string;
 }
 
 const DEFAULT_VALUES: RegisterFormValues = {
-  username: "",
+  name: "",
   email: "",
   password: "",
-  confirmPassword: "",
 };
 
-export function RegisterForm({ onSubmit }: RegisterFormProps) {
+export function RegisterForm({ onSubmit, serverError }: RegisterFormProps) {
   const [values, setValues] = useState<RegisterFormValues>(DEFAULT_VALUES);
   const [errors, setErrors] = useState<RegisterFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +29,8 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       setIsSubmitting(true);
       await onSubmit({
         ...values,
-        username: values.username.trim(),
+        name: values.name.trim(),
+        email: values.email.trim(),
       });
     } finally {
       setIsSubmitting(false);
@@ -37,22 +38,35 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
   }
 
   return (
-    <form className="grid gap-[var(--space-4)]" onSubmit={handleSubmit} noValidate>
+    <form className="grid gap-[var(--space-4)]" onSubmit={handleSubmit} noValidate data-testid="register-form">
+      {serverError ? (
+        <p
+          role="alert"
+          data-testid="register-error"
+          className="rounded-[var(--radius-sm)] bg-[var(--color-error-soft)] px-[var(--space-2)] py-[var(--space-2)] text-[var(--font-size-sm)] text-[var(--color-error)]"
+        >
+          {serverError}
+        </p>
+      ) : null}
       <TextField
-        label="Username"
+        label="Name"
+        name="name"
         type="text"
         required
-        autoComplete="username"
-        value={values.username}
-        onChange={(event) => setValues((prev) => ({ ...prev, username: event.target.value }))}
+        autoComplete="name"
+        data-testid="register-name"
+        value={values.name}
+        onChange={(event) => setValues((prev) => ({ ...prev, name: event.target.value }))}
         disabled={isSubmitting}
-        error={errors.username}
+        error={errors.name}
       />
       <TextField
         label="Email"
+        name="email"
         type="email"
         required
         autoComplete="email"
+        data-testid="register-email"
         value={values.email}
         onChange={(event) => setValues((prev) => ({ ...prev, email: event.target.value }))}
         disabled={isSubmitting}
@@ -60,25 +74,17 @@ export function RegisterForm({ onSubmit }: RegisterFormProps) {
       />
       <TextField
         label="Password"
+        name="password"
         type="password"
         required
         autoComplete="new-password"
+        data-testid="register-password"
         value={values.password}
         onChange={(event) => setValues((prev) => ({ ...prev, password: event.target.value }))}
         disabled={isSubmitting}
         error={errors.password}
       />
-      <TextField
-        label="Confirm password"
-        type="password"
-        required
-        autoComplete="new-password"
-        value={values.confirmPassword}
-        onChange={(event) => setValues((prev) => ({ ...prev, confirmPassword: event.target.value }))}
-        disabled={isSubmitting}
-        error={errors.confirmPassword}
-      />
-      <Button type="submit" isLoading={isSubmitting} loadingLabel="Creating account...">
+      <Button type="submit" isLoading={isSubmitting} loadingLabel="Creating account..." data-testid="register-submit">
         Create account
       </Button>
     </form>

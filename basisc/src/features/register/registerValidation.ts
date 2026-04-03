@@ -1,27 +1,27 @@
 export interface RegisterFormValues {
-  username: string;
+  name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 export interface RegisterFormErrors {
-  username?: string;
+  name?: string;
   email?: string;
   password?: string;
-  confirmPassword?: string;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export const PASSWORD_MIN_LENGTH = 6;
+
 export function validateRegisterForm(values: RegisterFormValues): RegisterFormErrors {
   const errors: RegisterFormErrors = {};
-  const username = values.username.trim();
+  const name = values.name.trim();
 
-  if (!username) {
-    errors.username = "Username is required";
-  } else if (username.length < 3) {
-    errors.username = "Username must be at least 3 characters";
+  if (!name) {
+    errors.name = "Name is required";
+  } else if (name.length < 2) {
+    errors.name = "Name must be at least 2 characters";
   }
 
   if (!values.email) {
@@ -32,14 +32,8 @@ export function validateRegisterForm(values: RegisterFormValues): RegisterFormEr
 
   if (!values.password) {
     errors.password = "Password is required";
-  } else if (values.password.length < 8) {
-    errors.password = "Password must be at least 8 characters";
-  }
-
-  if (!values.confirmPassword) {
-    errors.confirmPassword = "Please confirm your password";
-  } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = "Passwords do not match";
+  } else if (values.password.length < PASSWORD_MIN_LENGTH) {
+    errors.password = `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
   }
 
   return errors;

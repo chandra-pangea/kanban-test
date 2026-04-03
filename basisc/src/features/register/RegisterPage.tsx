@@ -1,12 +1,24 @@
-import { Link, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { RegisterForm } from "./RegisterForm";
 
 export function RegisterPage() {
-  const { isAuthenticated, user, register } = useAuth();
+  const { isAuthenticated, register } = useAuth();
+  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
+  const [serverError, setServerError] = useState<string | undefined>();
 
-  if (isAuthenticated && user) {
-    return <Navigate to="/dashboard" replace />;
+  useEffect(() => {
+    if (!success) return;
+    const timer = window.setTimeout(() => {
+      navigate("/login", { replace: true, state: { registered: true } });
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [success, navigate]);
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -16,8 +28,8 @@ export function RegisterPage() {
           Join us
         </h1>
         <p className="mt-[var(--space-4)] text-[var(--font-size-md)] text-[var(--color-muted)]">
-          Create an account with your username, email, and password. Every field is required to keep your profile
-          complete and your workspace secure.
+          Create an account with your name, email, and password. Your profile is stored locally in this demo — no
+          backend.
         </p>
       </section>
 
@@ -30,15 +42,32 @@ export function RegisterPage() {
             All fields are required.
           </p>
         </header>
-        <RegisterForm
-          onSubmit={async (values) => {
-            await register(values.username, values.email);
-          }}
-        />
+        {success ? (
+          <p
+            role="status"
+            data-testid="register-success"
+            className="mb-[var(--space-4)] rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--color-primary)_12%,transparent)] px-[var(--space-3)] py-[var(--space-3)] text-[var(--font-size-sm)] font-medium text-[var(--color-primary)]"
+          >
+            Registration successful. Redirecting to sign in…
+          </p>
+        ) : (
+          <RegisterForm
+            serverError={serverError}
+            onSubmit={async (values) => {
+              setServerError(undefined);
+              const result = await register(values.name, values.email, values.password);
+              if (result.ok) {
+                setSuccess(true);
+              } else {
+                setServerError("An account with this email already exists.");
+              }
+            }}
+          />
+        )}
         <p className="mt-[var(--space-5)] text-center text-[var(--font-size-sm)] text-[var(--color-muted)]">
           Already have an account?{" "}
           <Link
-            to="/"
+            to="/login"
             className="font-semibold text-[var(--color-primary)] underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)]"
           >
             Sign in

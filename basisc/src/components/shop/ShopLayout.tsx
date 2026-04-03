@@ -1,20 +1,23 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 
 export function ShopLayout() {
+  const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { isAuthenticated, logout, user } = useAuth();
 
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--color-surface)]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-[var(--space-4)] px-[var(--space-4)] py-[var(--space-4)]">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-[var(--space-4)] px-[var(--space-4)] py-[var(--space-4)]">
           <Link
             to="/"
             className="text-[var(--font-size-lg)] font-semibold tracking-tight text-[var(--color-text)]"
           >
             Demo Shop
           </Link>
-          <nav className="flex items-center gap-[var(--space-6)] text-[var(--font-size-sm)] font-medium">
+          <nav className="flex flex-wrap items-center gap-[var(--space-4)] text-[var(--font-size-sm)] font-medium sm:gap-[var(--space-6)]">
             <Link
               to="/"
               className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
@@ -37,6 +40,41 @@ export function ShopLayout() {
                 </span>
               ) : null}
             </Link>
+            {isAuthenticated ? (
+              <>
+                <span className="hidden text-[var(--color-muted)] sm:inline" data-testid="nav-user-email">
+                  {user?.email}
+                </span>
+                <button
+                  type="button"
+                  data-testid="logout-button"
+                  onClick={() => {
+                    logout();
+                    navigate("/login", { replace: true });
+                  }}
+                  className="rounded-[var(--radius-md)] border border-[var(--color-border)] px-[var(--space-3)] py-[var(--space-1)] text-[var(--color-text)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
+                  data-testid="nav-login"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/register"
+                  className="rounded-[var(--radius-md)] bg-[var(--color-primary)] px-[var(--space-3)] py-[var(--space-1)] text-white transition hover:opacity-95"
+                  data-testid="nav-register"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </nav>
         </div>
       </header>
