@@ -5,6 +5,7 @@ import { LoginPage } from "./features/login/LoginPage";
 import { RegisterPage } from "./features/register/RegisterPage";
 import { CartPage } from "./pages/CartPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
+import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { ProductsPage } from "./pages/ProductsPage";
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route element={<ShopLayout />}>
         <Route path="/" element={<ProductsPage />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route
           path="/cart"
           element={

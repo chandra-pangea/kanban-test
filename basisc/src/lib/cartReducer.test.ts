@@ -13,6 +13,7 @@ const p1: Product = {
   price: 10,
   category: "X",
   image: "",
+  description: "",
 };
 
 const p2: Product = {
@@ -21,6 +22,7 @@ const p2: Product = {
   price: 5,
   category: "Y",
   image: "",
+  description: "",
 };
 
 describe("cartReducer", () => {
@@ -33,6 +35,34 @@ describe("cartReducer", () => {
     let s = cartReducer(initialCartState, { type: "ADD", product: p1 });
     s = cartReducer(s, { type: "ADD", product: p1 });
     expect(s.items).toEqual([{ ...p1, qty: 2 }]);
+  });
+
+  it("adds with explicit quantity on new line", () => {
+    const s = cartReducer(initialCartState, {
+      type: "ADD",
+      product: p1,
+      qty: 3,
+    });
+    expect(s.items).toEqual([{ ...p1, qty: 3 }]);
+  });
+
+  it("merges duplicate add with explicit quantity", () => {
+    let s = cartReducer(initialCartState, {
+      type: "ADD",
+      product: p1,
+      qty: 2,
+    });
+    s = cartReducer(s, { type: "ADD", product: p1, qty: 4 });
+    expect(s.items).toEqual([{ ...p1, qty: 6 }]);
+  });
+
+  it("treats invalid qty as at least 1", () => {
+    const s = cartReducer(initialCartState, {
+      type: "ADD",
+      product: p1,
+      qty: 0,
+    });
+    expect(s.items).toEqual([{ ...p1, qty: 1 }]);
   });
 
   it("removes a line", () => {
