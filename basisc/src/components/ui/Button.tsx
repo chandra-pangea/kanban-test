@@ -14,7 +14,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex h-[2.875rem] w-full items-center justify-center rounded-[var(--radius-md)] border border-transparent bg-[var(--color-primary)] px-[var(--space-4)] text-[var(--font-size-sm)] font-semibold text-[var(--color-surface)] transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)] disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+      className={`inline-flex h-11 w-full items-center justify-center rounded-xl border border-transparent bg-[#5562ff] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#3947f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-ring)] disabled:cursor-not-allowed disabled:bg-[#b8bff8] ${className}`}
       disabled={props.disabled ?? isLoading}
       {...props}
     >
