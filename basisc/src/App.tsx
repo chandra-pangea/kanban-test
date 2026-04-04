@@ -5,6 +5,8 @@ import { LoginPage } from "./features/login/LoginPage";
 import { RegisterPage } from "./features/register/RegisterPage";
 import { CartPage } from "./pages/CartPage";
 import { CheckoutPage } from "./pages/CheckoutPage";
+import { OrderDetailPage } from "./pages/OrderDetailPage";
+import { OrderHistoryPage } from "./pages/OrderHistoryPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { ProductsPage } from "./pages/ProductsPage";
 
@@ -29,6 +31,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrderHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:orderId"
+          element={
+            <ProtectedRoute>
+              <OrderDetailPage />
             </ProtectedRoute>
           }
         />

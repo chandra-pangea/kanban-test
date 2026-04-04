@@ -25,6 +25,13 @@ export function ShopLayout() {
               Products
             </Link>
             <Link
+              to="/orders"
+              className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
+              data-testid="nav-orders"
+            >
+              Orders
+            </Link>
+            <Link
               to="/cart"
               className="relative text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
               data-testid="nav-cart"
