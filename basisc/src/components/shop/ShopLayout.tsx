@@ -8,7 +8,7 @@ export function ShopLayout() {
   const navigate = useNavigate();
   const { itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, isAdmin, logout, user } = useAuth();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -28,6 +28,15 @@ export function ShopLayout() {
             >
               Products
             </Link>
+            {isAuthenticated && isAdmin ? (
+              <Link
+                to="/admin/products"
+                className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
+                data-testid="nav-admin-products"
+              >
+                Admin
+              </Link>
+            ) : null}
             <Link
               to="/orders"
               className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
@@ -69,6 +78,12 @@ export function ShopLayout() {
             </Link>
             {isAuthenticated ? (
               <>
+                <span
+                  className="hidden rounded-[var(--radius-sm)] border border-[var(--color-border)] px-[var(--space-2)] py-[var(--space-1)] text-[var(--font-size-xs)] font-semibold uppercase tracking-wide text-[var(--color-muted)] sm:inline"
+                  data-testid="nav-user-role"
+                >
+                  {user?.role === "admin" ? "Admin" : "User"}
+                </span>
                 <span className="hidden text-[var(--color-muted)] sm:inline" data-testid="nav-user-email">
                   {user?.email}
                 </span>

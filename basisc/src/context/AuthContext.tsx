@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type PropsWithChildren,
@@ -10,20 +11,25 @@ import {
   loadSession,
   removeSessionRecord,
   saveSession,
+  seedDemoAccounts,
   tryLogin,
   tryRegisterUser,
   type SessionUser,
+  type UserRole,
 } from "../lib/authStorage";
 
 export interface AuthUser {
   name: string;
   email: string;
+  role: UserRole;
 }
 
 interface AuthContextValue {
   user: AuthUser | null;
   currentUser: AuthUser | null;
   isAuthenticated: boolean;
+  /** True when the signed-in user has the admin role. */
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ ok: true } | { ok: false; error: "invalid_credentials" }>;
   register: (
     name: string,
@@ -40,11 +46,15 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 function readInitialUser(): AuthUser | null {
   const s = loadSession();
   if (!s?.email || !s?.name) return null;
-  return { name: s.name, email: s.email };
+  return { name: s.name, email: s.email, role: s.role };
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<AuthUser | null>(readInitialUser);
+
+  useEffect(() => {
+    seedDemoAccounts();
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const result = tryLogin(email, password);
@@ -70,6 +80,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const session: SessionUser = {
       name: name.trim() || normalizedEmail.split("@")[0] || "User",
       email: normalizedEmail,
+      role: "user",
     };
     saveSession(session);
     setUser(session);
@@ -85,6 +96,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       user,
       currentUser: user,
       isAuthenticated: Boolean(user),
+      isAdmin: user?.role === "admin",
       login,
       register,
       signInWithGoogle,
