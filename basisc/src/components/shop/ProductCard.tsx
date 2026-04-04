@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { WishlistHeartButton } from "./WishlistHeartButton";
 import type { Product } from "../../types/product";
 
 type Props = { product: Product };
@@ -12,18 +13,23 @@ export function ProductCard({ product }: Props) {
       className="flex flex-col overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]"
       data-testid="product-card"
     >
-      <Link
-        to={`/product/${product.id}`}
-        className="block aspect-square overflow-hidden bg-[var(--color-border)]/40 outline-none ring-0 transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
-        data-testid={`product-link-${product.id}`}
-      >
-        <img
-          src={product.image}
-          alt=""
-          className="h-full w-full object-cover"
-          loading="lazy"
-        />
-      </Link>
+      <div className="relative aspect-square overflow-hidden bg-[var(--color-border)]/40">
+        <Link
+          to={`/product/${product.id}`}
+          className="block h-full outline-none ring-0 transition hover:opacity-95 focus-visible:ring-2 focus-visible:ring-[var(--color-ring)]"
+          data-testid={`product-link-${product.id}`}
+        >
+          <img
+            src={product.image}
+            alt=""
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        </Link>
+        <div className="absolute right-[var(--space-2)] top-[var(--space-2)] z-10">
+          <WishlistHeartButton productId={product.id} />
+        </div>
+      </div>
       <div className="flex flex-1 flex-col gap-[var(--space-2)] p-[var(--space-4)]">
         <p className="text-[var(--font-size-xs)] font-medium uppercase tracking-wide text-[var(--color-primary)]">
           {product.category}

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { WishlistHeartButton } from "../components/shop/WishlistHeartButton";
 import { useCart } from "../context/CartContext";
 import { MOCK_PRODUCTS } from "../data/products";
 import { getProductById } from "../lib/getProductById";
@@ -72,12 +73,15 @@ function ProductDetailContent({ product }: ContentProps) {
           >
             {product.category}
           </p>
-          <h1
-            className="text-[var(--font-size-xl)] font-extrabold tracking-tight text-[var(--color-text)]"
-            data-testid="pdp-name"
-          >
-            {product.name}
-          </h1>
+          <div className="flex flex-wrap items-start gap-[var(--space-3)]">
+            <h1
+              className="min-w-0 flex-1 text-[var(--font-size-xl)] font-extrabold tracking-tight text-[var(--color-text)]"
+              data-testid="pdp-name"
+            >
+              {product.name}
+            </h1>
+            <WishlistHeartButton productId={product.id} size="md" />
+          </div>
           {product.rating != null ? (
             <p
               className="text-[var(--font-size-sm)] text-[var(--color-muted)]"

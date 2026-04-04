@@ -1,10 +1,12 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
+import { useWishlist } from "../../context/WishlistContext";
 
 export function ShopLayout() {
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { count: wishlistCount } = useWishlist();
   const { isAuthenticated, logout, user } = useAuth();
 
   return (
@@ -30,6 +32,22 @@ export function ShopLayout() {
               data-testid="nav-orders"
             >
               Orders
+            </Link>
+            <Link
+              to="/wishlist"
+              className="relative text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
+              data-testid="nav-wishlist"
+            >
+              Wishlist
+              {wishlistCount > 0 ? (
+                <span
+                  className="absolute -right-3 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white"
+                  data-testid="wishlist-badge-count"
+                  aria-label={`${wishlistCount} items in wishlist`}
+                >
+                  {wishlistCount > 99 ? "99+" : wishlistCount}
+                </span>
+              ) : null}
             </Link>
             <Link
               to="/cart"

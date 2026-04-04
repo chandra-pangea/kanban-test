@@ -9,6 +9,7 @@ import { OrderDetailPage } from "./pages/OrderDetailPage";
 import { OrderHistoryPage } from "./pages/OrderHistoryPage";
 import { ProductDetailPage } from "./pages/ProductDetailPage";
 import { ProductsPage } from "./pages/ProductsPage";
+import { WishlistPage } from "./pages/WishlistPage";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Route element={<ShopLayout />}>
         <Route path="/" element={<ProductsPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route path="/wishlist" element={<WishlistPage />} />
         <Route
           path="/cart"
           element={
