@@ -44,6 +44,7 @@ describe("AuthContext", () => {
     expect(JSON.parse(localStorage.getItem(SESSION_KEY)!)).toEqual({
       name: "Neo",
       email: "neo@example.com",
+      role: "user",
     });
   });
 
@@ -62,6 +63,7 @@ describe("AuthContext", () => {
     expect(JSON.parse(localStorage.getItem(SESSION_KEY)!)).toEqual({
       name: "Google User",
       email: "google@example.com",
+      role: "user",
     });
   });
 });

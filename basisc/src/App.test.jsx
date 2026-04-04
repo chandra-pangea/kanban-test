@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import { ProductCatalogProvider } from "./context/ProductCatalogContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 import { WishlistProvider } from "./context/WishlistContext";

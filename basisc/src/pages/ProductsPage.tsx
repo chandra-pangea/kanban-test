@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { MOCK_PRODUCTS } from "../data/products";
+import { useProductCatalog } from "../context/ProductCatalogContext";
 import { ProductCard } from "../components/shop/ProductCard";
 import { ProductFilters } from "../components/shop/ProductFilters";
 import {
@@ -25,17 +25,19 @@ const defaultFilterFields = (): ProductFilterFields => {
 };
 
 export function ProductsPage() {
+  const { products: catalog } = useProductCatalog();
+
   const priceBounds = useMemo(() => {
-    const prices = MOCK_PRODUCTS.map((p) => p.price);
+    const prices = catalog.map((p) => p.price);
     return {
       min: Math.floor(Math.min(...prices)),
       max: Math.ceil(Math.max(...prices)),
     };
-  }, []);
+  }, [catalog]);
 
   const categories = useMemo(
-    () => uniqueCategories(MOCK_PRODUCTS),
-    [],
+    () => uniqueCategories(catalog),
+    [catalog],
   );
 
   const [filterFields, setFilterFields] =
@@ -49,8 +51,8 @@ export function ProductsPage() {
   );
 
   const visible = useMemo(
-    () => filterProducts(MOCK_PRODUCTS, filters),
-    [filters],
+    () => filterProducts(catalog, filters),
+    [catalog, filters],
   );
 
   return (

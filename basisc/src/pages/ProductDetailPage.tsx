@@ -2,7 +2,7 @@ import { memo, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { WishlistHeartButton } from "../components/shop/WishlistHeartButton";
 import { useCart } from "../context/CartContext";
-import { MOCK_PRODUCTS } from "../data/products";
+import { useProductCatalog } from "../context/ProductCatalogContext";
 import { getProductById } from "../lib/getProductById";
 import type { Product } from "../types/product";
 
@@ -12,17 +12,18 @@ function relatedProducts(current: Product, catalog: readonly Product[]): Product
     .slice(0, 4);
 }
 
-type ContentProps = { product: Product };
+type ContentProps = { product: Product; catalog: readonly Product[] };
 
 const ProductDetailContent = memo(function ProductDetailContent({
   product,
+  catalog,
 }: ContentProps) {
   const { addToCart } = useCart();
   const [qtyInput, setQtyInput] = useState<number | "">(1);
 
   const related = useMemo(
-    () => relatedProducts(product, MOCK_PRODUCTS),
-    [product],
+    () => relatedProducts(product, catalog),
+    [product, catalog],
   );
 
   function handleAddToCart() {
@@ -180,10 +181,11 @@ const ProductDetailContent = memo(function ProductDetailContent({
 
 export function ProductDetailPage() {
   const { id = "" } = useParams<{ id: string }>();
+  const { products: catalog } = useProductCatalog();
 
   const product = useMemo(
-    () => (id ? getProductById(MOCK_PRODUCTS, id) : undefined),
-    [id],
+    () => (id ? getProductById(catalog, id) : undefined),
+    [catalog, id],
   );
 
   if (!product) {
@@ -209,5 +211,5 @@ export function ProductDetailPage() {
     );
   }
 
-  return <ProductDetailContent key={id} product={product} />;
+  return <ProductDetailContent key={id} product={product} catalog={catalog} />;
 }
