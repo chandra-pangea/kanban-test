@@ -42,6 +42,21 @@
   --shadow-card: 0 20px 45px -24px rgb(40 52 119 / 36%);
 }
 
+/* Overrides when `<html class="dark">` — tokens mirror @theme structure */
+.dark {
+  --color-page: #0c0e14;
+  --color-surface: #151822;
+  --color-border: #2a3142;
+  --color-text: #eef0f7;
+  --color-muted: #9aa3b8;
+  --color-primary: #818cf8;
+  --color-primary-hover: #a5b4fc;
+  --color-error: #f87171;
+  --color-error-soft: #2a1518;
+  --color-ring: #818cf8;
+  --shadow-card: 0 24px 50px -20px rgb(0 0 0 / 55%);
+}
+
 @layer base {
   * {
     box-sizing: border-box;
