@@ -15,6 +15,7 @@ import {
   type CartState,
 } from "../lib/cartReducer";
 import type { CartItem, Product } from "../types/product";
+import { useToast } from "./ToastContext";
 
 const STORAGE_KEY = "ecommerce-demo-cart-v1";
 
@@ -44,6 +45,7 @@ function loadState(): CartState {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { showToast } = useToast();
   const [state, dispatch] = useReducer(cartReducer, initialCartState, () =>
     typeof window === "undefined" ? initialCartState : loadState(),
   );
@@ -56,9 +58,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [state.items]);
 
-  const addToCart = useCallback((product: Product, qty?: number) => {
-    dispatch({ type: "ADD", product, qty });
-  }, []);
+  const addToCart = useCallback(
+    (product: Product, qty?: number) => {
+      dispatch({ type: "ADD", product, qty });
+      const q = Math.max(1, Math.floor(qty ?? 1));
+      const message =
+        q > 1
+          ? `Added ${q} × ${product.name} to cart`
+          : `Added ${product.name} to cart`;
+      showToast(message, { variant: "success" });
+    },
+    [showToast],
+  );
 
   const removeFromCart = useCallback((id: string) => {
     dispatch({ type: "REMOVE", id });

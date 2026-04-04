@@ -3,10 +3,12 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import { GoogleSignInButton } from "../../components/GoogleSignInButton";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../context/ToastContext";
 import { isGoogleAuthConfigured } from "../../lib/googleAuth";
 import { RegisterForm } from "./RegisterForm";
 
 export function RegisterPage() {
+  const { showToast } = useToast();
   const { isAuthenticated, register, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [success, setSuccess] = useState(false);
@@ -68,6 +70,9 @@ export function RegisterPage() {
                 if (result.ok) {
                   setSuccess(true);
                 } else {
+                  showToast("An account with this email already exists.", {
+                    variant: "error",
+                  });
                   setServerError("An account with this email already exists.");
                 }
               }}
@@ -94,10 +99,14 @@ export function RegisterPage() {
                 <GoogleSignInButton
                   onSuccess={(profile) => {
                     setOauthError(undefined);
+                    showToast("Signed in successfully.", { variant: "success" });
                     signInWithGoogle(profile.name, profile.email);
                     navigate("/", { replace: true });
                   }}
-                  onError={(message) => setOauthError(message)}
+                  onError={(message) => {
+                    setOauthError(message);
+                    showToast(message, { variant: "error" });
+                  }}
                 />
               </div>
             ) : null}

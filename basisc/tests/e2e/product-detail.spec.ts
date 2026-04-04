@@ -41,7 +41,7 @@ test.describe("Product details page (PDP)", () => {
     await page.goto("/product/2");
     await page.getByTestId("pdp-add-to-cart").click();
     await expect(page.getByTestId("cart-badge-count")).toHaveText("1");
-    await expect(page.getByTestId("cart-toast")).toContainText(
+    await expect(page.getByTestId("app-toast")).toContainText(
       "Mechanical Keyboard",
     );
 
@@ -81,7 +81,7 @@ test.describe("Product details page (PDP)", () => {
     await page.getByTestId("nav-cart").click();
     await expect(page).toHaveURL(/\/cart$/);
     await expect(page.getByTestId("cart-line")).toHaveCount(1);
-    await expect(page.getByText("Laptop Stand")).toBeVisible();
+    await expect(page.getByTestId("cart-line").getByText("Laptop Stand")).toBeVisible();
     await expect(page.getByTestId("cart-total")).toContainText("$52.00");
   });
 });
