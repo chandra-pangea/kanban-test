@@ -7,8 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { MOCK_PRODUCTS } from "../data/products";
 import { getProductById } from "../lib/getProductById";
+import { useProductCatalog } from "./ProductCatalogContext";
 import type { Product } from "../types/product";
 
 const STORAGE_KEY = "ecommerce-demo-wishlist-v1";
@@ -37,6 +37,7 @@ function loadIds(): string[] {
 }
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
+  const { products: catalog } = useProductCatalog();
   const [ids, setIds] = useState<string[]>(() =>
     typeof window === "undefined" ? [] : loadIds(),
   );
@@ -69,9 +70,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const items = useMemo(
     () =>
       ids
-        .map((id) => getProductById(MOCK_PRODUCTS, id))
+        .map((id) => getProductById(catalog, id))
         .filter((p): p is Product => p != null),
-    [ids],
+    [catalog, ids],
   );
 
   const count = items.length;

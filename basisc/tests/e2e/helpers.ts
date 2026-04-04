@@ -10,9 +10,10 @@ export async function clearBrowserStorage(page: Page) {
 
 export async function seedLoggedInUser(
   page: Page,
-  user: { name: string; email: string; password: string },
+  user: { name: string; email: string; password: string; role?: "admin" | "user" },
 ) {
   const email = user.email.trim().toLowerCase();
+  const role = user.role ?? "user";
   await page.goto("/");
   await page.evaluate(
     (payload) => {
@@ -23,6 +24,7 @@ export async function seedLoggedInUser(
             name: payload.name,
             email: payload.email,
             password: payload.password,
+            role: payload.role,
           },
         ]),
       );
@@ -31,6 +33,7 @@ export async function seedLoggedInUser(
         JSON.stringify({
           name: payload.name,
           email: payload.email,
+          role: payload.role,
         }),
       );
     },
@@ -40,6 +43,7 @@ export async function seedLoggedInUser(
       name: user.name,
       email,
       password: user.password,
+      role,
     },
   );
   await page.reload();
@@ -48,9 +52,10 @@ export async function seedLoggedInUser(
 /** Stores a user record without a session so the login page can be exercised. */
 export async function seedUserOnlyNoSession(
   page: Page,
-  user: { name: string; email: string; password: string },
+  user: { name: string; email: string; password: string; role?: "admin" | "user" },
 ) {
   const email = user.email.trim().toLowerCase();
+  const role = user.role ?? "user";
   await page.goto("/");
   await page.evaluate(
     (payload) => {
@@ -61,6 +66,7 @@ export async function seedUserOnlyNoSession(
             name: payload.name,
             email: payload.email,
             password: payload.password,
+            role: payload.role,
           },
         ]),
       );
@@ -72,6 +78,7 @@ export async function seedUserOnlyNoSession(
       name: user.name,
       email,
       password: user.password,
+      role,
     },
   );
 }

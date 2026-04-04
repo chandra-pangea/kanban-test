@@ -5,6 +5,7 @@ import {
   loadUsers,
   removeSessionRecord,
   saveSession,
+  seedDemoAccounts,
   tryLogin,
   tryRegisterUser,
 } from "./authStorage";
@@ -23,7 +24,7 @@ describe("authStorage", () => {
       });
       expect(result).toEqual({ ok: true });
       expect(loadUsers()).toEqual([
-        { name: "Jane", email: "jane@example.com", password: "secret1" },
+        { name: "Jane", email: "jane@example.com", password: "secret1", role: "user" },
       ]);
     });
 
@@ -46,7 +47,19 @@ describe("authStorage", () => {
       const result = tryLogin("neo@example.com", "matrix6");
       expect(result).toEqual({
         ok: true,
-        user: { name: "Neo", email: "neo@example.com" },
+        user: { name: "Neo", email: "neo@example.com", role: "user" },
+      });
+    });
+
+    it("returns admin role when stored", () => {
+      tryRegisterUser({ name: "Boss", email: "boss@example.com", password: "x" });
+      const users = loadUsers();
+      users[0].role = "admin";
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      const result = tryLogin("boss@example.com", "x");
+      expect(result).toEqual({
+        ok: true,
+        user: { name: "Boss", email: "boss@example.com", role: "admin" },
       });
     });
 
@@ -68,19 +81,29 @@ describe("authStorage", () => {
 
   describe("session helpers", () => {
     it("saveSession persists JSON under session key", () => {
-      saveSession({ name: "T", email: "t@t.com" });
+      saveSession({ name: "T", email: "t@t.com", role: "user" });
       expect(JSON.parse(localStorage.getItem(SESSION_KEY)!)).toEqual({
         name: "T",
         email: "t@t.com",
+        role: "user",
       });
     });
 
     it("removeSessionRecord clears session key only", () => {
       localStorage.setItem(USERS_KEY, "[]");
-      saveSession({ name: "T", email: "t@t.com" });
+      saveSession({ name: "T", email: "t@t.com", role: "user" });
       removeSessionRecord();
       expect(localStorage.getItem(SESSION_KEY)).toBeNull();
       expect(localStorage.getItem(USERS_KEY)).toBe("[]");
+    });
+  });
+
+  describe("seedDemoAccounts", () => {
+    it("adds demo admin once", () => {
+      seedDemoAccounts();
+      seedDemoAccounts();
+      const emails = loadUsers().map((u) => u.email);
+      expect(emails.filter((e) => e === "admin@demo.shop")).toHaveLength(1);
     });
   });
 });

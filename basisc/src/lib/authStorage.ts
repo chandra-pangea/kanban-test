@@ -1,15 +1,20 @@
 export const USERS_KEY = "basisc-users";
 export const SESSION_KEY = "basisc-auth-session";
 
+export type UserRole = "admin" | "user";
+
 export interface StoredUserRecord {
   name: string;
   email: string;
   password: string;
+  /** Defaults to `"user"` when omitted (legacy rows). */
+  role?: UserRole;
 }
 
 export interface SessionUser {
   name: string;
   email: string;
+  role: UserRole;
 }
 
 function parseJson<T>(raw: string | null): T | null {
@@ -30,8 +35,20 @@ export function saveUsers(users: StoredUserRecord[]): void {
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
+function normalizeRole(raw: unknown): UserRole {
+  return raw === "admin" ? "admin" : "user";
+}
+
 export function loadSession(): SessionUser | null {
-  return parseJson<SessionUser>(localStorage.getItem(SESSION_KEY));
+  const raw = parseJson<{ name?: string; email?: string; role?: unknown }>(
+    localStorage.getItem(SESSION_KEY),
+  );
+  if (!raw?.email || !raw?.name) return null;
+  return {
+    name: raw.name,
+    email: raw.email,
+    role: normalizeRole(raw.role),
+  };
 }
 
 export function saveSession(user: SessionUser): void {
@@ -56,6 +73,7 @@ export function tryRegisterUser(input: StoredUserRecord): RegisterOutcome {
     name: input.name.trim(),
     email,
     password: input.password,
+    role: "user",
   });
   saveUsers(users);
   return { ok: true };
@@ -72,5 +90,20 @@ export function tryLogin(email: string, password: string): LoginOutcome {
   if (!found || found.password !== password) {
     return { ok: false, reason: "invalid_credentials" };
   }
-  return { ok: true, user: { name: found.name, email: found.email } };
+  const role: UserRole = found.role ?? "user";
+  return { ok: true, user: { name: found.name, email: found.email, role } };
+}
+
+/** Ensures a demo admin account exists for local testing (idempotent). */
+export function seedDemoAccounts(): void {
+  const users = loadUsers();
+  const demoEmail = "admin@demo.shop";
+  if (users.some((u) => u.email.toLowerCase() === demoEmail)) return;
+  users.push({
+    name: "Demo Admin",
+    email: demoEmail,
+    password: "admin123",
+    role: "admin",
+  });
+  saveUsers(users);
 }
