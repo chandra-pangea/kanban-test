@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { WishlistHeartButton } from "../components/shop/WishlistHeartButton";
 import { useCart } from "../context/CartContext";
@@ -20,37 +20,19 @@ const ProductDetailContent = memo(function ProductDetailContent({
 }: ContentProps) {
   const { addToCart } = useCart();
   const [qtyInput, setQtyInput] = useState<number | "">(1);
-  const [toast, setToast] = useState<string | null>(null);
 
   const related = useMemo(
     () => relatedProducts(product, catalog),
     [product, catalog],
   );
 
-  useEffect(() => {
-    if (!toast) return;
-    const t = window.setTimeout(() => setToast(null), 2800);
-    return () => window.clearTimeout(t);
-  }, [toast]);
-
   function handleAddToCart() {
     const q = Math.max(1, Math.floor(Number(qtyInput === "" ? 1 : qtyInput)) || 1);
     addToCart(product, q);
-    setToast(`Added ${q} × ${product.name} to cart`);
   }
 
   return (
     <div data-testid="product-detail">
-      {toast ? (
-        <div
-          role="status"
-          className="fixed bottom-[var(--space-6)] left-1/2 z-20 max-w-md -translate-x-1/2 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-5)] py-[var(--space-3)] text-[var(--font-size-sm)] font-medium text-[var(--color-text)] shadow-lg"
-          data-testid="cart-toast"
-        >
-          {toast}
-        </div>
-      ) : null}
-
       <nav className="mb-[var(--space-6)] text-[var(--font-size-sm)] text-[var(--color-muted)]">
         <Link to="/" className="hover:text-[var(--color-primary)]">
           Products

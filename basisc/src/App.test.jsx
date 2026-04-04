@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { ProductCatalogProvider } from "./context/ProductCatalogContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
 import { WishlistProvider } from "./context/WishlistContext";
 
 describe("App shop", () => {
@@ -17,15 +18,15 @@ describe("App shop", () => {
     render(
       <MemoryRouter>
         <ThemeProvider>
-          <AuthProvider>
-            <ProductCatalogProvider>
+          <ToastProvider>
+            <AuthProvider>
               <CartProvider>
                 <WishlistProvider>
                   <App />
                 </WishlistProvider>
               </CartProvider>
-            </ProductCatalogProvider>
-          </AuthProvider>
+            </AuthProvider>
+          </ToastProvider>
         </ThemeProvider>
       </MemoryRouter>,
     );
