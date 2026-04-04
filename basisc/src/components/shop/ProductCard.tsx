@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { WishlistHeartButton } from "./WishlistHeartButton";
@@ -5,7 +6,7 @@ import type { Product } from "../../types/product";
 
 type Props = { product: Product };
 
-export function ProductCard({ product }: Props) {
+export const ProductCard = memo(function ProductCard({ product }: Props) {
   const { addToCart } = useCart();
 
   return (
@@ -24,6 +25,8 @@ export function ProductCard({ product }: Props) {
             alt=""
             className="h-full w-full object-cover"
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
         </Link>
         <div className="absolute right-[var(--space-2)] top-[var(--space-2)] z-10">
@@ -59,4 +62,4 @@ export function ProductCard({ product }: Props) {
       </div>
     </article>
   );
-}
+});

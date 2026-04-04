@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useWishlist } from "../../context/WishlistContext";
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
   size?: "sm" | "md";
 };
 
-export function WishlistHeartButton({
+export const WishlistHeartButton = memo(function WishlistHeartButton({
   productId,
   className = "",
   size = "sm",
@@ -47,4 +48,4 @@ export function WishlistHeartButton({
       </svg>
     </button>
   );
-}
+});

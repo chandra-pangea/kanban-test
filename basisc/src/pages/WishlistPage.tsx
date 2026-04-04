@@ -51,6 +51,8 @@ export function WishlistPage() {
                 src={p.image}
                 alt=""
                 className="h-20 w-20 rounded-[var(--radius-md)] object-cover"
+                loading="lazy"
+                decoding="async"
               />
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)]">

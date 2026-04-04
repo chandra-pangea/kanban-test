@@ -1,14 +1,19 @@
-import type { ProductFilters as Filters } from "../../lib/filterProducts";
+import { memo } from "react";
+import type { ProductFilterFields } from "../../lib/filterProducts";
 
 type Props = {
   categories: string[];
-  value: Filters;
-  onChange: (next: Filters) => void;
+  searchInput: string;
+  onSearchInputChange: (value: string) => void;
+  value: ProductFilterFields;
+  onChange: (next: ProductFilterFields) => void;
   priceBounds: { min: number; max: number };
 };
 
-export function ProductFilters({
+export const ProductFilters = memo(function ProductFilters({
   categories,
+  searchInput,
+  onSearchInputChange,
   value,
   onChange,
   priceBounds,
@@ -23,8 +28,8 @@ export function ProductFilters({
         <input
           type="search"
           placeholder="Search by name…"
-          value={value.search}
-          onChange={(e) => onChange({ ...value, search: e.target.value })}
+          value={searchInput}
+          onChange={(e) => onSearchInputChange(e.target.value)}
           className="rounded-[var(--radius-md)] border border-[var(--color-border)] px-[var(--space-3)] py-[var(--space-2)] text-[var(--font-size-sm)] outline-none ring-[var(--color-ring)] focus:ring-2"
           data-testid="filter-search"
         />
@@ -87,4 +92,4 @@ export function ProductFilters({
       </label>
     </div>
   );
-}
+});
