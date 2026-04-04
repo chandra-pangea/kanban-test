@@ -1,6 +1,9 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { cartSubtotal } from "../lib/cartReducer";
+import { appendOrder } from "../lib/ordersStorage";
+import type { Order } from "../types/order";
 
 export function CheckoutPage() {
   const { items, clearCart } = useCart();
@@ -8,8 +11,9 @@ export function CheckoutPage() {
   const [address, setAddress] = useState("");
   const [payment, setPayment] = useState("card");
   const [submitted, setSubmitted] = useState(false);
+  const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
 
-  if (submitted) {
+  if (submitted && placedOrderId) {
     return (
       <div
         className="mx-auto max-w-lg rounded-[var(--radius-xl)] border border-[var(--color-border)] bg-[var(--color-surface)] px-[var(--space-8)] py-[var(--space-12)] text-center shadow-[var(--shadow-card)]"
@@ -24,9 +28,34 @@ export function CheckoutPage() {
         <p className="mt-[var(--space-3)] text-[var(--font-size-sm)] text-[var(--color-muted)]">
           Thanks, {name}. This is a demo — no payment was processed.
         </p>
+        <p className="mt-[var(--space-4)] text-[var(--font-size-sm)] text-[var(--color-muted)]">
+          Order ID{" "}
+          <span
+            className="break-all font-mono text-[var(--color-text)]"
+            data-testid="order-placed-id"
+          >
+            {placedOrderId}
+          </span>
+        </p>
+        <div className="mt-[var(--space-6)] flex flex-col gap-[var(--space-3)] sm:flex-row sm:justify-center">
+          <Link
+            to={`/orders/${placedOrderId}`}
+            className="inline-block rounded-[var(--radius-md)] bg-[var(--color-primary)] px-[var(--space-6)] py-[var(--space-3)] text-[var(--font-size-sm)] font-semibold text-white hover:bg-[var(--color-primary-hover)]"
+            data-testid="order-success-view-link"
+          >
+            View order
+          </Link>
+          <Link
+            to="/orders"
+            className="inline-block rounded-[var(--radius-md)] border border-[var(--color-border)] px-[var(--space-6)] py-[var(--space-3)] text-[var(--font-size-sm)] font-semibold text-[var(--color-text)]"
+            data-testid="order-success-history-link"
+          >
+            Order history
+          </Link>
+        </div>
         <Link
           to="/"
-          className="mt-[var(--space-8)] inline-block rounded-[var(--radius-md)] border border-[var(--color-border)] px-[var(--space-6)] py-[var(--space-3)] text-[var(--font-size-sm)] font-semibold text-[var(--color-text)]"
+          className="mt-[var(--space-6)] inline-block text-[var(--font-size-sm)] font-medium text-[var(--color-primary)] hover:underline"
         >
           Continue shopping
         </Link>
@@ -55,7 +84,22 @@ export function CheckoutPage() {
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
+    const total = cartSubtotal(items);
+    const order: Order = {
+      id: crypto.randomUUID(),
+      items: items.map((i) => ({
+        id: i.id,
+        name: i.name,
+        price: i.price,
+        qty: i.qty,
+      })),
+      total,
+      date: new Date().toISOString(),
+      status: "Completed",
+    };
+    appendOrder(order);
     clearCart();
+    setPlacedOrderId(order.id);
     setSubmitted(true);
   }
 

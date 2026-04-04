@@ -76,6 +76,9 @@ test.describe("Authentication E2E", () => {
 
     await page.goto("/checkout");
     await expect(page).toHaveURL(/\/login$/);
+
+    await page.goto("/orders");
+    await expect(page).toHaveURL(/\/login$/);
   });
 
   test("Scenario 6: Auth persistence after refresh", async ({ page }) => {
