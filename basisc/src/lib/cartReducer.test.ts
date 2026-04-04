@@ -94,6 +94,15 @@ describe("cartReducer", () => {
     s = cartReducer(s, { type: "CLEAR" });
     expect(s.items).toEqual([]);
   });
+
+  it("replaces entire cart", () => {
+    let s = cartReducer(initialCartState, { type: "ADD", product: p1 });
+    s = cartReducer(s, {
+      type: "REPLACE",
+      items: [{ ...p2, qty: 2 }],
+    });
+    expect(s.items).toEqual([{ ...p2, qty: 2 }]);
+  });
 });
 
 describe("cartSubtotal", () => {

@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { WishlistHeartButton } from "../components/shop/WishlistHeartButton";
 import { useCart } from "../context/CartContext";
 import { useProductCatalog } from "../context/ProductCatalogContext";
+import { useToast } from "../context/ToastContext";
 import { getProductById } from "../lib/getProductById";
 import type { Product } from "../types/product";
 
@@ -19,6 +20,7 @@ const ProductDetailContent = memo(function ProductDetailContent({
   catalog,
 }: ContentProps) {
   const { addToCart } = useCart();
+  const { showToast } = useToast();
   const [qtyInput, setQtyInput] = useState<number | "">(1);
 
   const related = useMemo(
@@ -29,6 +31,7 @@ const ProductDetailContent = memo(function ProductDetailContent({
   function handleAddToCart() {
     const q = Math.max(1, Math.floor(Number(qtyInput === "" ? 1 : qtyInput)) || 1);
     addToCart(product, q);
+    showToast(`Added ${product.name} to cart`, { variant: "success" });
   }
 
   return (
