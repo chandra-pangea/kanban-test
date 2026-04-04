@@ -1,4 +1,5 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { ThemeToggle } from "../ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
@@ -20,6 +21,7 @@ export function ShopLayout() {
             Demo Shop
           </Link>
           <nav className="flex flex-wrap items-center gap-[var(--space-4)] text-[var(--font-size-sm)] font-medium sm:gap-[var(--space-6)]">
+            <ThemeToggle />
             <Link
               to="/"
               className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"

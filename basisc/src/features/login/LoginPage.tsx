@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { GoogleSignInButton } from "../../components/GoogleSignInButton";
+import { ThemeToggle } from "../../components/ThemeToggle";
 import { useAuth } from "../../context/AuthContext";
 import { isGoogleAuthConfigured } from "../../lib/googleAuth";
 import { LoginForm } from "./LoginForm";
@@ -21,7 +22,10 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen grid-cols-1 bg-[var(--color-page)] px-[var(--space-4)] py-[var(--space-8)] md:grid-cols-2 md:items-center md:gap-[var(--space-8)] md:px-[var(--space-10)]">
+    <main className="relative grid min-h-screen grid-cols-1 bg-[var(--color-page)] px-[var(--space-4)] py-[var(--space-8)] md:grid-cols-2 md:items-center md:gap-[var(--space-8)] md:px-[var(--space-10)]">
+      <div className="absolute right-[var(--space-4)] top-[var(--space-4)] z-10 md:right-[var(--space-10)] md:top-[var(--space-6)]">
+        <ThemeToggle />
+      </div>
       <section className="mx-auto hidden w-full max-w-[28rem] md:block">
         <h1 className="text-[var(--font-size-xl)] font-extrabold leading-[var(--line-tight)] text-[var(--color-text)]">
           Welcome back

@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { WishlistProvider } from "./context/WishlistContext";
 
 describe("App shop", () => {
@@ -14,13 +15,15 @@ describe("App shop", () => {
   it("renders product catalog heading", () => {
     render(
       <MemoryRouter>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <App />
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <App />
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </MemoryRouter>,
     );
 
