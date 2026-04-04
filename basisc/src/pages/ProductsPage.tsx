@@ -5,8 +5,12 @@ import { ProductFilters } from "../components/shop/ProductFilters";
 import {
   filterProducts,
   uniqueCategories,
+  type ProductFilterFields,
   type ProductFilters as FiltersState,
 } from "../lib/filterProducts";
+import { useDebouncedValue } from "../lib/useDebouncedValue";
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 const defaultFilters = (): FiltersState => ({
   category: "",
@@ -14,6 +18,11 @@ const defaultFilters = (): FiltersState => ({
   priceMin: null,
   priceMax: null,
 });
+
+const defaultFilterFields = (): ProductFilterFields => {
+  const d = defaultFilters();
+  return { category: d.category, priceMin: d.priceMin, priceMax: d.priceMax };
+};
 
 export function ProductsPage() {
   const priceBounds = useMemo(() => {
@@ -29,7 +38,15 @@ export function ProductsPage() {
     [],
   );
 
-  const [filters, setFilters] = useState<FiltersState>(defaultFilters);
+  const [filterFields, setFilterFields] =
+    useState<ProductFilterFields>(defaultFilterFields);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebouncedValue(searchInput, SEARCH_DEBOUNCE_MS);
+
+  const filters = useMemo(
+    (): FiltersState => ({ ...filterFields, search: debouncedSearch }),
+    [filterFields, debouncedSearch],
+  );
 
   const visible = useMemo(
     () => filterProducts(MOCK_PRODUCTS, filters),
@@ -43,15 +60,17 @@ export function ProductsPage() {
           Products
         </h1>
         <p className="mt-[var(--space-2)] max-w-2xl text-[var(--font-size-sm)] text-[var(--color-muted)]">
-          Browse our demo catalog. Filters and search run instantly in the
-          browser.
+          Browse our demo catalog. Search is debounced so typing stays smooth;
+          category and price filters apply immediately.
         </p>
       </div>
 
       <ProductFilters
         categories={categories}
-        value={filters}
-        onChange={setFilters}
+        searchInput={searchInput}
+        onSearchInputChange={setSearchInput}
+        value={filterFields}
+        onChange={setFilterFields}
         priceBounds={priceBounds}
       />
 

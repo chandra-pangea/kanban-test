@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { WishlistHeartButton } from "../components/shop/WishlistHeartButton";
 import { useCart } from "../context/CartContext";
@@ -14,7 +14,9 @@ function relatedProducts(current: Product, catalog: readonly Product[]): Product
 
 type ContentProps = { product: Product };
 
-function ProductDetailContent({ product }: ContentProps) {
+const ProductDetailContent = memo(function ProductDetailContent({
+  product,
+}: ContentProps) {
   const { addToCart } = useCart();
   const [qtyInput, setQtyInput] = useState<number | "">(1);
   const [toast, setToast] = useState<string | null>(null);
@@ -63,6 +65,9 @@ function ProductDetailContent({ product }: ContentProps) {
             alt=""
             className="aspect-square w-full object-cover"
             data-testid="pdp-image"
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
           />
         </div>
 
@@ -168,6 +173,9 @@ function ProductDetailContent({ product }: ContentProps) {
                       src={p.image}
                       alt=""
                       className="h-full w-full object-cover transition group-hover:scale-[1.02]"
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
                     />
                   </div>
                   <div className="p-[var(--space-3)]">
@@ -186,7 +194,7 @@ function ProductDetailContent({ product }: ContentProps) {
       ) : null}
     </div>
   );
-}
+});
 
 export function ProductDetailPage() {
   const { id = "" } = useParams<{ id: string }>();

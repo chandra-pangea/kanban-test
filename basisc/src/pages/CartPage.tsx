@@ -42,6 +42,8 @@ export function CartPage() {
               src={line.image}
               alt=""
               className="h-20 w-20 shrink-0 rounded-[var(--radius-md)] object-cover"
+              loading="lazy"
+              decoding="async"
             />
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-[var(--color-text)]">

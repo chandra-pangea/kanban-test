@@ -7,6 +7,9 @@ export type ProductFilters = {
   priceMax: number | null;
 };
 
+/** Category and price filters (search is debounced separately in the UI). */
+export type ProductFilterFields = Omit<ProductFilters, "search">;
+
 export function filterProducts(
   products: Product[],
   f: ProductFilters,
