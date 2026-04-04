@@ -30,6 +30,8 @@ interface AuthContextValue {
     email: string,
     password: string,
   ) => Promise<{ ok: true } | { ok: false; error: "duplicate_email" }>;
+  /** Persists a session from Google Identity Services (JWT profile); no password stored in this demo. */
+  signInWithGoogle: (name: string, email: string) => void;
   logout: () => void;
 }
 
@@ -63,6 +65,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return { ok: true as const };
   }, []);
 
+  const signInWithGoogle = useCallback((name: string, email: string) => {
+    const normalizedEmail = email.trim().toLowerCase();
+    const session: SessionUser = {
+      name: name.trim() || normalizedEmail.split("@")[0] || "User",
+      email: normalizedEmail,
+    };
+    saveSession(session);
+    setUser(session);
+  }, []);
+
   const logout = useCallback(() => {
     removeSessionRecord();
     setUser(null);
@@ -75,9 +87,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
       isAuthenticated: Boolean(user),
       login,
       register,
+      signInWithGoogle,
       logout,
     }),
-    [login, logout, register, user],
+    [login, logout, register, signInWithGoogle, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
