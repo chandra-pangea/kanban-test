@@ -7,7 +7,8 @@ export type CartAction =
   | { type: "REMOVE"; id: string }
   | { type: "DECREMENT"; id: string }
   | { type: "SET_QTY"; id: string; qty: number }
-  | { type: "CLEAR" };
+  | { type: "CLEAR" }
+  | { type: "REPLACE"; items: CartItem[] };
 
 export const initialCartState: CartState = { items: [] };
 
@@ -56,6 +57,8 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
     }
     case "CLEAR":
       return { items: [] };
+    case "REPLACE":
+      return { items: action.items };
     default:
       return state;
   }

@@ -3,10 +3,16 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useReducer,
   type ReactNode,
 } from "react";
+import { loadSession } from "../lib/authStorage";
+import {
+  loadCartItemsForUser,
+  saveCartItemsForUser,
+} from "../lib/cartStorage";
 import {
   cartItemCount,
   cartReducer,
@@ -15,9 +21,7 @@ import {
   type CartState,
 } from "../lib/cartReducer";
 import type { CartItem, Product } from "../types/product";
-import { useToast } from "./ToastContext";
-
-const STORAGE_KEY = "ecommerce-demo-cart-v1";
+import { useAuth } from "./AuthContext";
 
 type CartContextValue = {
   items: CartItem[];
@@ -32,44 +36,32 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function loadState(): CartState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return initialCartState;
-    const parsed = JSON.parse(raw) as { items?: CartItem[] };
-    if (!parsed?.items || !Array.isArray(parsed.items)) return initialCartState;
-    return { items: parsed.items };
-  } catch {
-    return initialCartState;
-  }
+function readInitialCartState(): CartState {
+  if (typeof window === "undefined") return initialCartState;
+  const session = loadSession();
+  return { items: loadCartItemsForUser(session?.email ?? null) };
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const { showToast } = useToast();
-  const [state, dispatch] = useReducer(cartReducer, initialCartState, () =>
-    typeof window === "undefined" ? initialCartState : loadState(),
+  const { user } = useAuth();
+  const [state, dispatch] = useReducer(
+    cartReducer,
+    initialCartState,
+    readInitialCartState,
   );
+
+  useLayoutEffect(() => {
+    const items = loadCartItemsForUser(user?.email ?? null);
+    dispatch({ type: "REPLACE", items });
+  }, [user?.email]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: state.items }));
-    } catch {
-      /* ignore quota */
-    }
-  }, [state.items]);
+    saveCartItemsForUser(user?.email ?? null, state.items);
+  }, [state.items, user?.email]);
 
-  const addToCart = useCallback(
-    (product: Product, qty?: number) => {
-      dispatch({ type: "ADD", product, qty });
-      const q = Math.max(1, Math.floor(qty ?? 1));
-      const message =
-        q > 1
-          ? `Added ${q} × ${product.name} to cart`
-          : `Added ${product.name} to cart`;
-      showToast(message, { variant: "success" });
-    },
-    [showToast],
-  );
+  const addToCart = useCallback((product: Product, qty?: number) => {
+    dispatch({ type: "ADD", product, qty });
+  }, []);
 
   const removeFromCart = useCallback((id: string) => {
     dispatch({ type: "REMOVE", id });

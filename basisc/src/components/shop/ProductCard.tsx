@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useToast } from "../../context/ToastContext";
 import { WishlistHeartButton } from "./WishlistHeartButton";
 import type { Product } from "../../types/product";
 
@@ -8,6 +9,7 @@ type Props = { product: Product };
 
 export const ProductCard = memo(function ProductCard({ product }: Props) {
   const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   return (
     <article
@@ -54,7 +56,10 @@ export const ProductCard = memo(function ProductCard({ product }: Props) {
         <button
           type="button"
           className="mt-[var(--space-2)] rounded-[var(--radius-md)] bg-[var(--color-primary)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--font-size-sm)] font-semibold text-white transition hover:bg-[var(--color-primary-hover)]"
-          onClick={() => addToCart(product)}
+          onClick={() => {
+            addToCart(product);
+            showToast(`Added ${product.name} to cart`, { variant: "success" });
+          }}
           data-testid={`add-to-cart-${product.id}`}
         >
           Add to cart
