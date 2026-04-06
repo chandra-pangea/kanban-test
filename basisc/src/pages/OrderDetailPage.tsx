@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { getOrderById } from "../lib/ordersStorage";
 
 function formatDate(iso: string): string {
@@ -11,8 +12,9 @@ function formatDate(iso: string): string {
 }
 
 export function OrderDetailPage() {
+  const { user } = useAuth();
   const { orderId } = useParams<{ orderId: string }>();
-  const order = orderId ? getOrderById(orderId) : undefined;
+  const order = orderId ? getOrderById(orderId, user!.email) : undefined;
 
   if (!order) {
     return (

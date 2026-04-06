@@ -37,13 +37,15 @@ export function ShopLayout() {
                 Admin
               </Link>
             ) : null}
-            <Link
-              to="/orders"
-              className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
-              data-testid="nav-orders"
-            >
-              Orders
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/orders"
+                className="text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
+                data-testid="nav-orders"
+              >
+                My Orders
+              </Link>
+            ) : null}
             <Link
               to="/wishlist"
               className="relative text-[var(--color-muted)] transition hover:text-[var(--color-primary)]"
