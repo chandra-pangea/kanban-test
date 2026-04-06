@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { loadOrders } from "../lib/ordersStorage";
 
 function formatDate(iso: string): string {
@@ -11,7 +12,8 @@ function formatDate(iso: string): string {
 }
 
 export function OrderHistoryPage() {
-  const orders = loadOrders();
+  const { user } = useAuth();
+  const orders = loadOrders(user?.email);
 
   if (orders.length === 0) {
     return (

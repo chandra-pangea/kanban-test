@@ -1,6 +1,10 @@
 import type { Order } from "../types/order";
 
-export const ORDERS_STORAGE_KEY = "ecommerce-demo-orders-v1";
+export function ordersLocalStorageKeyForUser(email: string | null | undefined): string {
+  const normalized = email?.trim().toLowerCase();
+  if (!normalized) return "ecommerce-demo-orders-guest-v1";
+  return `orders_${normalized}`;
+}
 
 function isLineItem(value: unknown): boolean {
   if (!value || typeof value !== "object") return false;
@@ -23,9 +27,9 @@ function isOrderRecord(value: unknown): value is Order {
   return o.items.every(isLineItem);
 }
 
-export function loadOrders(): Order[] {
+export function loadOrders(email: string | null | undefined): Order[] {
   try {
-    const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+    const raw = localStorage.getItem(ordersLocalStorageKeyForUser(email));
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
@@ -35,15 +39,15 @@ export function loadOrders(): Order[] {
   }
 }
 
-export function appendOrder(order: Order): void {
+export function appendOrder(email: string | null | undefined, order: Order): void {
   try {
-    const next = [order, ...loadOrders()];
-    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(next));
+    const next = [order, ...loadOrders(email)];
+    localStorage.setItem(ordersLocalStorageKeyForUser(email), JSON.stringify(next));
   } catch {
     /* ignore quota */
   }
 }
 
-export function getOrderById(id: string): Order | undefined {
-  return loadOrders().find((o) => o.id === id);
+export function getOrderById(email: string | null | undefined, id: string): Order | undefined {
+  return loadOrders(email).find((o) => o.id === id);
 }

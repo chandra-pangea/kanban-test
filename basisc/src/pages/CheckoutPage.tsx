@@ -1,11 +1,13 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { cartSubtotal } from "../lib/cartReducer";
 import { appendOrder } from "../lib/ordersStorage";
 import type { Order } from "../types/order";
 
 export function CheckoutPage() {
+  const { user } = useAuth();
   const { items, clearCart } = useCart();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -97,7 +99,7 @@ export function CheckoutPage() {
       date: new Date().toISOString(),
       status: "Completed",
     };
-    appendOrder(order);
+    appendOrder(user?.email, order);
     clearCart();
     setPlacedOrderId(order.id);
     setSubmitted(true);
